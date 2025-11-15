@@ -23,9 +23,18 @@
       "electron/**/*",
       "client/dist/**/*"
     ],
+    "extraResources": [
+      {
+        "from": "electron/playwright",
+        "to": "playwright",
+        "filter": ["**/*"]
+      }
+    ],
     "win": {
       "icon": "build/ico.ico",
-      "target": ["nsis"]
+      "target": [
+        "nsis"
+      ]
     },
     "mac": {
       "icon": "build/icon.icns",
@@ -33,7 +42,10 @@
     },
     "linux": {
       "icon": "build/icon.png",
-      "target": ["AppImage", "deb"],
+      "target": [
+        "AppImage",
+        "deb"
+      ],
       "category": "Utility"
     }
   },

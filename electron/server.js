@@ -7,6 +7,15 @@ const fs = require('fs');
 const http = require('http');
 const { Server } = require('socket.io');
 
+process.on('uncaughtException', (err) => {
+    console.error("UNCAUGHT EXCEPTION =>", err);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error("UNHANDLED REJECTION =>", reason);
+});
+
+
 // Create HTTP server
 const server = http.createServer(app);
 
@@ -18,15 +27,20 @@ const io = new Server(server, {
     }
 });
 
+
 const getChromePath = () => {
-    const localPath = path.join(__dirname, 'playwright', 'chromium', 'chrome.exe');
-    if (fs.existsSync(localPath)) {
-        console.log('Menggunakan Chromium lokal dari folder build.');
-        return localPath;
+    const resourcesPath = process.resourcesPath;
+    const chromePath = path.join(resourcesPath, "playwright", "chromium", "chrome.exe");
+
+    if (!fs.existsSync(chromePath)) {
+        console.error("[ERROR] Chromium tidak ditemukan di:", chromePath);
+    } else {
+        console.log("[OK] Chromium ditemukan di:", chromePath);
     }
-    console.log('Chromium lokal tidak ditemukan. Gunakan default Playwright.');
-    return undefined;
+
+    return chromePath;
 };
+
 
 let browser = null;
 
@@ -276,8 +290,8 @@ async function processAutomationMbtiles(sessionId, data, socketId) {
                 progress: 80
             });
 
-            // await iframe.locator('xpath=//*[@id="mslink2"]').click();
-            // await iframe.getByText('upload', { exact: true }).click();
+            await iframe.locator('xpath=//*[@id="mslink2"]').click();
+            await iframe.getByText('upload', { exact: true }).click();
 
             // Simulate upload completion
             emitProgress(socketId, 'upload-completed', {
